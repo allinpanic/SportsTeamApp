@@ -47,13 +47,18 @@ final class CoreDataManager {
     save(context: context)
   }
   
-  func fetchData<T: NSManagedObject> (from entity: T.Type) -> [T] {
+  func fetchData<T: NSManagedObject> (for entity: T.Type, predicate: NSCompoundPredicate? = nil) -> [T] {
     let context = getContext()
     
     let request: NSFetchRequest<T>
     var fetchedResult = [T]()
     
     request = entity.fetchRequest() as! NSFetchRequest<T>
+    
+    let nameSortDescriptor = NSSortDescriptor(key: "fullName", ascending: true, selector: #selector(NSString.localizedStandardCompare(_:)))
+    
+    request.predicate = predicate
+    request.sortDescriptors = [nameSortDescriptor]    
     
     do {
       fetchedResult = try context.fetch(request)

@@ -15,9 +15,6 @@ class PlayerViewController: UIViewController {
   
   // MARK: - Private properties
   
-  private let teams = ["Manchester United", "Real Madrid", "FC Barcelona", "Chelsea FC", "Arsenal", "Liverpool"]
-  private let positions = ["Goalkeeper", "Fullback", "Center Back", "Defending Midfielder", "Winger", "Striker", "Attacking Midfielder", "Forward"]
-  
   private var activeTextField: UITextField?
   
   private let playerImageView: UIImageView = {
@@ -156,6 +153,13 @@ class PlayerViewController: UIViewController {
     return button
   }()
   
+  private let inPlaySegmentedControl: UISegmentedControl = {
+    let segmentControl = UISegmentedControl(items: ["In Play", "Bench"])
+    segmentControl.translatesAutoresizingMaskIntoConstraints = false
+    segmentControl.selectedSegmentIndex = 0
+    return segmentControl
+  }()
+  
   private lazy var tapTeamGesture: UITapGestureRecognizer = {
     let tap = UITapGestureRecognizer(target: self, action: #selector(tapTeamHandler(gestureRecognizer:)))
     return tap
@@ -257,6 +261,12 @@ extension PlayerViewController {
       player.age = ageNumber
       player.teamNumber = number
       
+      if inPlaySegmentedControl.selectedSegmentIndex == 0 {
+        player.inPlay = true
+      } else {
+        player.inPlay = false
+      }
+      
       dataManager.save(context: context)
       
       navigationController?.popViewController(animated: true)
@@ -285,9 +295,9 @@ extension PlayerViewController: UIPickerViewDelegate, UIPickerViewDataSource {
   func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
     switch pickerView.tag {
     case 1:
-      return teams.count
+      return Constants.teams.count
     case 2:
-      return positions.count
+      return Constants.positions.count
     default:
       return 0
     }
@@ -296,9 +306,9 @@ extension PlayerViewController: UIPickerViewDelegate, UIPickerViewDataSource {
   func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
     switch pickerView.tag {
     case 1:
-      return teams[row]
+      return Constants.teams[row]
     case 2:
-      return positions[row]
+      return Constants.positions[row]
     default:
       return "not specified"
     }
@@ -307,10 +317,10 @@ extension PlayerViewController: UIPickerViewDelegate, UIPickerViewDataSource {
   func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
     switch pickerView.tag {
     case 1:
-      teamPickerLabel.text = teams[row]
+      teamPickerLabel.text = Constants.teams[row]
       teamPickerView.isHidden = true
     case 2:
-      positionPickerLabel.text = positions[row]
+      positionPickerLabel.text = Constants.positions[row]
       positionPickerView.isHidden = true
     default:
       print("something went wrong")
@@ -347,12 +357,16 @@ extension PlayerViewController: UITextFieldDelegate {
 
 extension PlayerViewController {
   private func setupLayout() {
-    let subviews = [playerImageView, numberTextField, uploadImageButton, nameTextField, nationalityTextField, ageTextField, teamLabel, positionLabel, teamPickerLabel, positionPickerLabel, saveButton, teamPickerView, positionPickerView]
+    let subviews = [playerImageView, numberTextField, uploadImageButton, nameTextField, nationalityTextField, ageTextField, teamLabel, positionLabel, teamPickerLabel, positionPickerLabel, saveButton, teamPickerView, positionPickerView, inPlaySegmentedControl]
     
     subviews.forEach({view.addSubview($0)})
     
     NSLayoutConstraint.activate([
-      playerImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+      inPlaySegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+      inPlaySegmentedControl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+      inPlaySegmentedControl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      
+      playerImageView.topAnchor.constraint(equalTo: inPlaySegmentedControl.bottomAnchor, constant: 20),
       playerImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
       playerImageView.heightAnchor.constraint(equalToConstant: 180),
       playerImageView.widthAnchor.constraint(equalToConstant: 180),
@@ -400,7 +414,7 @@ extension PlayerViewController {
     ])
   }
   
-  func isAnyFieldEmpty() -> Bool {
+  private func isAnyFieldEmpty() -> Bool {
     guard let numberField = numberTextField.text,
       let ageField = ageTextField.text,
       let nameField = nameTextField.text,

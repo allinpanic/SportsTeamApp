@@ -18,6 +18,12 @@ final class PlayerTableViewCell: UITableViewCell {
       fullNameLabel.text = player.fullName
       numberLabel.text = "\(player.teamNumber)"
       playerInfoView.configureView(player: player)
+      //guard let player = player else {return}
+      if player.inPlay {
+        inPlayLabel.text = "In Play"
+      } else {
+        inPlayLabel.text = "Bench"
+      }
     }
   }
   // MARK: - Private Properties
@@ -61,6 +67,15 @@ final class PlayerTableViewCell: UITableViewCell {
     return view
   }()
   
+  private let inPlayLabel: UILabel = {
+    let label = UILabel()
+    label.translatesAutoresizingMaskIntoConstraints = false
+    label.font = .systemFont(ofSize: 14)
+    label.textColor = .orange
+    label.text = "Bench9999"
+    return label
+  }()
+  
   // MARK: - Inits
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -82,6 +97,7 @@ extension PlayerTableViewCell {
     contentView.addSubview(playerInfoView)
     contentView.addSubview(blueView)
     contentView.addSubview(numberLabel)
+    contentView.addSubview(inPlayLabel)
     
     NSLayoutConstraint.activate([
       blueView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
@@ -92,21 +108,23 @@ extension PlayerTableViewCell {
       numberLabel.centerXAnchor.constraint(equalTo: blueView.centerXAnchor),
       numberLabel.centerYAnchor.constraint(equalTo: blueView.centerYAnchor),
       
-      
       fullNameLabel.leadingAnchor.constraint(equalTo: numberLabel.trailingAnchor, constant: 8),
       fullNameLabel.centerYAnchor.constraint(equalTo: numberLabel.centerYAnchor),
+      
+      inPlayLabel.trailingAnchor.constraint(equalTo: playerInfoView.trailingAnchor),
+      inPlayLabel.bottomAnchor.constraint(equalTo: blueView.bottomAnchor),
       
       playerImageView.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 8),
       playerImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
       playerImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-      playerImageView.heightAnchor.constraint(equalToConstant: 100),
-      playerImageView.widthAnchor.constraint(equalToConstant: 100),
+      playerImageView.heightAnchor.constraint(equalToConstant: 105),
+      playerImageView.widthAnchor.constraint(equalToConstant: 105),
       
       playerInfoView.topAnchor.constraint(equalTo: playerImageView.topAnchor),
-      playerInfoView.leadingAnchor.constraint(equalTo: playerImageView.trailingAnchor, constant: 30),
+      playerInfoView.leadingAnchor.constraint(equalTo: playerImageView.trailingAnchor, constant: 20),
       playerInfoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
       playerInfoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-      playerInfoView.heightAnchor.constraint(equalToConstant: 100)
+      playerInfoView.heightAnchor.constraint(equalToConstant: 105)
     ])
   }
 }
