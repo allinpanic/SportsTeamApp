@@ -170,7 +170,6 @@ final class SearchViewController: UIViewController {
 
 extension SearchViewController {
   @objc private func startSearchButtonPressed() {
-    print("search button pressed")
     let compoundPredicate = makeCompoundPredicate(name: nameTextField.text!,
                                                   age: ageTextField.text!,
                                                   team: teamPickerLabel.text!,
@@ -205,8 +204,6 @@ extension SearchViewController {
   private func makeCompoundPredicate(name: String, age: String, team: String, position: String) -> NSCompoundPredicate {
     var predicates = [NSPredicate]()
     
-    print(name,age,team,position)
-    
     if !name.isEmpty {
       let namePredicate = NSPredicate(format: "fullName CONTAINS[cd] '\(name)'")
       predicates.append(namePredicate)
@@ -219,14 +216,12 @@ extension SearchViewController {
     }
     
     if team != "Select"{
-      let teamPredicate = NSPredicate(format: "team CONTAINS[cd] '\(team)'")
-      print("team predicate: \(team)")
+      let teamPredicate = NSPredicate(format: "club.name CONTAINS[cd] '\(team)'")
       predicates.append(teamPredicate)
     }
     
     if position != "Select" {
       let positionPredicate = NSPredicate(format: "position CONTAINS[cd] '\(position)'")
-      print("position predicate: \(position)")
       predicates.append(positionPredicate)
     }
     

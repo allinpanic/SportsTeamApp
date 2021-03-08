@@ -120,7 +120,7 @@ extension PlayerInfoView {
   }
   
   func configureView(player: Player) {
-    teamNameLabel.text = player.team
+    teamNameLabel.text = player.club?.name
     nationalityPlayerLabel.text = player.nationality
     playerPositionLabel.text = player.position
     agePlayerLabel.text = "\(player.age)"    

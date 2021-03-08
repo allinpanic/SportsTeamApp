@@ -12,6 +12,11 @@ import UIKit
 class PlayerViewController: UIViewController {
   
   var dataManager: CoreDataManager!
+  var player: Player? {
+    didSet {
+      fillViewsWithPlayerInfo()
+    }
+  }
   
   // MARK: - Private properties
   
@@ -187,7 +192,6 @@ class PlayerViewController: UIViewController {
                                            name: UIResponder.keyboardWillShowNotification,
                                            object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-  
     
     setupLayout()
   }
@@ -242,15 +246,23 @@ extension PlayerViewController {
     } else {
       let context = dataManager.getContext()
       
-      let player = dataManager.createObject(from: Player.self)
-      player.fullName = nameTextField.text
-      player.nationality = nationalityTextField.text
-      player.position = positionPickerLabel.text
-      player.team = teamPickerLabel.text
+      if player == nil {
+        player = dataManager.createObject(from: Player.self)
+      }
+      
+      let club = dataManager.createObject(from: Club.self)
+      club.name = teamPickerLabel.text
+      
+      player?.fullName = nameTextField.text
+      player?.nationality = nationalityTextField.text
+      player?.position = positionPickerLabel.text
+      player?.club = club
+      
+      //player?.club?.name = teamPickerLabel.text
       
       guard let image = playerImageView.image,
         let imageData = image.pngData() else {return}
-      player.image = imageData
+      player?.image = imageData
       
       guard let numberString = numberTextField.text,
         let number = Int16(numberString) else {return}
@@ -258,13 +270,13 @@ extension PlayerViewController {
       guard let ageString = ageTextField.text,
         let ageNumber = Int16(ageString) else {return}
       
-      player.age = ageNumber
-      player.teamNumber = number
+      player?.age = ageNumber
+      player?.teamNumber = number
       
       if inPlaySegmentedControl.selectedSegmentIndex == 0 {
-        player.inPlay = true
+        player?.inPlay = true
       } else {
-        player.inPlay = false
+        player?.inPlay = false
       }
       
       dataManager.save(context: context)
@@ -443,5 +455,29 @@ extension PlayerViewController {
     })
     alert.addAction(action)
     present(alert, animated: true, completion: nil)
+  }
+  
+  private func fillViewsWithPlayerInfo () {
+    guard let playerImage = player?.image,
+      let player = player,
+      let name = player.fullName,
+      let nationality = player.nationality,
+      let team = player.club?.name,
+      let position = player.position
+      else {return}
+    
+    playerImageView.image = UIImage(data: playerImage)
+    numberTextField.text = "\(player.teamNumber)"
+    nameTextField.text = name
+    nationalityTextField.text = nationality
+    ageTextField.text = "\(player.age)"
+    teamPickerLabel.text = team
+    positionPickerLabel.text = position
+    
+    if player.inPlay{
+      inPlaySegmentedControl.selectedSegmentIndex = 0
+    } else {
+      inPlaySegmentedControl.selectedSegmentIndex = 1
+    }
   }
 }

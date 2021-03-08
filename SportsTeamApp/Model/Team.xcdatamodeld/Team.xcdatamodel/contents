@@ -11,12 +11,11 @@
         <attribute name="inPlay" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="nationality" attributeType="String"/>
         <attribute name="position" attributeType="String"/>
-        <attribute name="team" attributeType="String"/>
         <attribute name="teamNumber" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="club" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="player" inverseEntity="Club"/>
     </entity>
     <elements>
         <element name="Club" positionX="-54" positionY="-9" width="128" height="73"/>
-        <element name="Player" positionX="-365.6015625" positionY="58.34375" width="128" height="178"/>
+        <element name="Player" positionX="-365.6015625" positionY="58.34375" width="128" height="163"/>
     </elements>
 </model>
